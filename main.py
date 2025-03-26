@@ -28,24 +28,19 @@ class TrajPlotter(object):
 
     def update(self, est_xyz):
         x, z = est_xyz[0], est_xyz[2]
-        print((x, z))
         #gt_x, gt_z = gt_xyz[0], gt_xyz[2]
 
         est = np.array([x, z]).reshape(2)
+
         #gt = np.array([gt_x, gt_z]).reshape(2)
-
         #error = np.linalg.norm(est - gt)
-
         #self.errors.append(error)
-
         #avg_error = np.mean(np.array(self.errors))
 
         # === drawer ==================================
         # each point
-
         draw_x, draw_y = int(x) + 290, int(z) + 270
         #draw_x, draw_y = int(x) + 290, int(z) + 90   <--- NOT WORKING IDK MAGIC NUMBERS
-
         #true_x, true_y = int(gt_x) + 290, int(gt_z) + 90
 
         # draw trajectory
