@@ -47,6 +47,7 @@ class KITTILoader(object):
         self.img_id = self.config["start"]
         self.img_N = len(glob.glob(pathname=self.config["root_path"] + "/sequences/" \
                                             + self.config["sequence"] + "/image_0/*.png"))
+        self.cap = cv2.VideoCapture(0)
 
     def get_cur_pose(self):
         return self.gt_poses[self.img_id - 1]
@@ -55,6 +56,7 @@ class KITTILoader(object):
         file_name = self.config["root_path"] + "/sequences/" + self.config["sequence"] \
                     + "/image_0/" + str(item).zfill(6) + ".png"
         img = cv2.imread(file_name)
+        _, img = self.cap.read()
         return img
 
     def __iter__(self):
@@ -65,7 +67,7 @@ class KITTILoader(object):
             file_name = self.config["root_path"] + "/sequences/" + self.config["sequence"] \
                         + "/image_0/" + str(self.img_id).zfill(6) + ".png"
             img = cv2.imread(file_name)
-
+            img = self.cap.read()[1]
             self.img_id += 1
 
             return img

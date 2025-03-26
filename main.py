@@ -26,40 +26,44 @@ class TrajPlotter(object):
         self.traj = np.zeros((600, 600, 3), dtype=np.uint8)
         pass
 
-    def update(self, est_xyz, gt_xyz):
+    def update(self, est_xyz):
         x, z = est_xyz[0], est_xyz[2]
-        gt_x, gt_z = gt_xyz[0], gt_xyz[2]
+        print((x, z))
+        #gt_x, gt_z = gt_xyz[0], gt_xyz[2]
 
         est = np.array([x, z]).reshape(2)
-        gt = np.array([gt_x, gt_z]).reshape(2)
+        #gt = np.array([gt_x, gt_z]).reshape(2)
 
-        error = np.linalg.norm(est - gt)
+        #error = np.linalg.norm(est - gt)
 
-        self.errors.append(error)
+        #self.errors.append(error)
 
-        avg_error = np.mean(np.array(self.errors))
+        #avg_error = np.mean(np.array(self.errors))
 
         # === drawer ==================================
         # each point
-        draw_x, draw_y = int(x) + 290, int(z) + 90
-        true_x, true_y = int(gt_x) + 290, int(gt_z) + 90
+
+        draw_x, draw_y = int(x) + 290, int(z) + 270
+        #draw_x, draw_y = int(x) + 290, int(z) + 90   <--- NOT WORKING IDK MAGIC NUMBERS
+
+        #true_x, true_y = int(gt_x) + 290, int(gt_z) + 90
 
         # draw trajectory
         cv2.circle(self.traj, (draw_x, draw_y), 1, (0, 255, 0), 1)
-        cv2.circle(self.traj, (true_x, true_y), 1, (0, 0, 255), 2)
+        #cv2.circle(self.traj, (true_x, true_y), 1, (0, 0, 255), 2)
         cv2.rectangle(self.traj, (10, 20), (600, 80), (0, 0, 0), -1)
 
         # draw text
-        text = "[AvgError] %2.4fm" % (avg_error)
-        cv2.putText(self.traj, text, (20, 40),
-                    cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1, 8)
+        #text = "[AvgError] %2.4fm" % (avg_error)
+        #cv2.putText(self.traj, text, (20, 40),
+        #           cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1, 8)
 
         return self.traj
 
 
 def run(args):
     with open(args.config, 'r') as f:
-        config = yaml.load(f)
+        config = yaml.safe_load(f)
 
     # create dataloader
     loader = create_dataloader(config["dataset"])
@@ -77,6 +81,7 @@ def run(args):
 
     vo = VisualOdometry(detector, matcher, loader.cam)
     for i, img in enumerate(loader):
+    
         gt_pose = loader.get_cur_pose()
         R, t = vo.update(img, absscale.update(gt_pose))
 
@@ -85,7 +90,8 @@ def run(args):
 
         # === drawer ==================================
         img1 = keypoints_plot(img, vo)
-        img2 = traj_plotter.update(t, gt_pose[:, 3])
+        img2 = traj_plotter.update(t)
+        print(t)
 
         cv2.imshow("keypoints", img1)
         cv2.imshow("trajectory", img2)

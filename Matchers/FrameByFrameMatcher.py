@@ -52,7 +52,7 @@ class FrameByFrameMatcher(object):
             # Sort them in the order of their distance.
             matches = sorted(matches, key=lambda x: x.distance)
             # self.good = matches[:self.config["KNN"]["first_N"]]
-            for i in range(self.config["KNN"]["first_N"]):
+            for i in range(min(self.config["KNN"]["first_N"], len(matches))):
                 self.good.append([matches[i]])
         else:
             logging.debug("FLANN keypoints matching...")
