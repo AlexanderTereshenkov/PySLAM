@@ -45,42 +45,45 @@ class KITTILoader(object):
                 self.gt_poses.append(pose)
 
         # image id
-        self.img_id = self.config["start"]
-        self.img_N = len(glob.glob(pathname=self.config["root_path"] + "/sequences/" \
-                                           + self.config["sequence"] + "/image_0/*.png"))
+        self.img_id = 0
+        # self.img_N = len(glob.glob(pathname=self.config["root_path"] + "/sequences/" \
+        #                                    + self.config["sequence"] + "/image_0/*.png"))
         #self.img_N = 1_000_000
         self.cap = cv2.VideoCapture(0)
 
     def get_cur_pose(self):
-        return self.gt_poses[self.img_id - 1]
+        return self.gt_poses[(self.img_id - 1) % len(self.gt_poses)]
+        # return [[0, 0, 0], [0, 0, 0], [0, 0, 0], ]
 
     def __getitem__(self, item):
-        file_name = self.config["root_path"] + "/sequences/" + self.config["sequence"] \
-                    + "/image_0/" + str(item).zfill(6) + ".png"
-        img = cv2.imread(file_name)
+        # file_name = self.config["root_path"] + "/sequences/" + self.config["sequence"] \
+        #             + "/image_0/" + str(item).zfill(6) + ".png"
+        # img = cv2.imread(file_name)
         #custom code
-        img = self.images[item]
+        # img = self.images[item]
+        img = self.cap.read()[1]
         return img
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        if self.img_id < self.img_N:
-            file_name = self.config["root_path"] + "/sequences/" + self.config["sequence"] \
-                        + "/image_0/" + str(self.img_id).zfill(6) + ".png"
-            img = cv2.imread(file_name)
+        # if self.img_id < self.img_N:
+            # file_name = self.config["root_path"] + "/sequences/" + self.config["sequence"] \
+            #             + "/image_0/" + str(self.img_id).zfill(6) + ".png"
+            # img = cv2.imread(file_name)
 
             #custom code
-            img = self.cap.read()[1]
-            self.images.append(img)
-
-            self.img_id += 1
-            return img
+        img = self.cap.read()[1]
+            # self.images.append(img)
+            #
+        self.img_id += 1
+        return img
         raise StopIteration()
 
     def __len__(self):
-        return self.img_N - self.config["start"]
+        return 1
+        # return self.img_N - self.config["start"]
 
 
 if __name__ == "__main__":

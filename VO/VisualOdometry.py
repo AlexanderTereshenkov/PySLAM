@@ -93,7 +93,7 @@ class AbosluteScaleComputer(object):
 
         self.count += 1
         self.prev_pose = self.cur_pose
-        return scale
+        return 1
 
 
 if __name__ == "__main__":
